@@ -1,0 +1,92 @@
+conda install opencv
+pip install pyside6
+conda install -c conda-forge tensorflow-hub
+
+/usr/lib/x86_64-linux-gnu/qt5/plugins
+
+export QT_PLUGIN_PATH="/home/marcin/miniconda3/envs/tf/plugins"
+
+
+python3 -m pip install --upgrade setuptools pip wheel
+
+python3 -m pip install nvidia-pyindex
+
+sudo apt install nvidia-cuda-toolkit
+
+pyserial
+
+
+
+
+
+
+
+
+
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
+sudo mv cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600
+wget http://developer.download.nvidia.com/compute/cuda/12.1.0/local_installers/cuda-repo-ubuntu2204-12-1-local_12.1.0-530.30.02-1_amd64.deb
+sudo dpkg -i cuda-repo-ubuntu2204-12-1-local_12.1.0-530.30.02-1_amd64.deb
+sudo cp /var/cuda-repo-ubuntu2204-12-1-local/cuda-*-keyring.gpg /usr/share/keyrings/
+sudo apt-get update
+sudo apt-get -y install cuda
+
+
+
+
+
+
+wget https://developer.download.nvidia.com/compute/cuda/12.1.0/local_installers/cuda_12.1.0_530.30.02_linux.run
+sudo sh cuda_12.1.0_530.30.02_linux.run
+
+Download https://developer.nvidia.com/rdp/cudnn-download
+unpack ./cudnn-linux-x86_64-8.8.0.121_cuda12-archive.tar.xz
+
+sudo apt install nvidia-drivers-320
+cp cuda/include/cudnn.h /usr/local/cuda/include
+sudo cp cuda/lib/libcudnn* /usr/local/cuda/lib64
+
+
+https://developer.nvidia.com/tensorrt
+sudo apt-get install libnvinfer8
+
+
+===========
+packaging
+https://www.pythonguis.com/tutorials/packaging-pyside6-applications-windows-pyinstaller-installforge/
+https://github.com/pyinstaller/pyinstaller/issues/6447
+https://doc.qt.io/qtforpython/deployment-pyinstaller.html
+
+python3 -m venv ./venv
+source ./venv/bin/activate
+pip install pyside6 pyinstaller pyserial opencv-python tensorflow tensorflow-hub imutils imagezmq
+
+
+# app.py
+import sys
+from PySide6.QtWidgets import QApplication, QLabel
+
+app = QApplication(sys.argv)
+label = QLabel("Hello World!")
+label.show()
+app.exec()
+
+
+pyinstaller app.py -w
+
+pyinstaller app.spec
+
+
+
+https://github.com/jeffbass/imagehub
+
+^^^ pi service
+
+
+
+
+
+
+
+
+
