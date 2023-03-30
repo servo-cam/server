@@ -5,12 +5,14 @@
 # Created By: Marcin Szczygliński <info@servocam.org>
 # GitHub: https://github.com/servo-cam
 # License: MIT
-# Updated At: 2023.03.27 02:00
+# Updated At: 2023.03.30 17:00
 # =============================================================================
 
 from PySide6 import QtGui
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QGridLayout, QLabel, QHBoxLayout, QVBoxLayout, QTreeView, QPushButton, QPlainTextEdit)
-from core.ui.widgets import DebugDialog, InfoDialog, ConfiguratorDialog, AlertDialog, UpdateDialog
+from core.ui.widgets import (DebugDialog, InfoDialog, ConfiguratorDialog, AlertDialog, UpdateDialog, SettingsSlider,
+                             SettingsCheckbox, SettingsInput)
 from core.utils import trans
 from core.ui.style import Style
 
@@ -29,6 +31,7 @@ class UIDialogs:
         self.window.dialog = {}
         self.window.debug = {}
         self.window.editor = {}
+        self.window.settings = {}
 
         for id in self.window.tracker.debug.ids:
             self.setup_debug(id)
@@ -44,6 +47,7 @@ class UIDialogs:
         self.setup_configurator_config()
         self.setup_configurator_hosts()
         self.setup_configurator_streams()
+        self.setup_configurator_servo()
 
         # alert
         self.window.alert_dialog = AlertDialog(self.window)
@@ -262,6 +266,106 @@ class UIDialogs:
         self.window.dialog['config.' + id].setLayout(layout)
         self.window.dialog['config.' + id].setWindowTitle(trans('dialog.config.streams'))
 
+    def setup_configurator_servo(self):
+        """Setup servo config dialog"""
+        id = 'servo'
+
+        # self.window.editor['servo'] = QPlainTextEdit()
+        # self.window.editor['servo'].setReadOnly(False)
+
+        # load data
+        # self.window.tracker.configurator.load(id)
+        path = self.window.tracker.configurator.get_path(id)
+
+        btns = {}
+        btns['defaults'] = QPushButton(trans("dialog.config.btn.defaults"))
+        btns['save'] = QPushButton(trans("dialog.config.btn.save"))
+        btns['defaults'].clicked.connect(
+            lambda: self.window.tracker.configurator.load_defaults(id))
+        btns['save'].clicked.connect(
+            lambda: self.window.tracker.configurator.save(id))
+
+        bottom_layout = QHBoxLayout()
+        bottom_layout.addWidget(btns['defaults'])
+        bottom_layout.addWidget(btns['save'])
+
+        self.window.path_label[id] = QLabel(str(path))
+        self.window.path_label[id].setStyleSheet("font-weight: bold;")
+
+        self.window.settings['servo.fov.x'] = SettingsSlider(self.window, 'servo.fov.x',
+                                                             trans('settings.servo.fov.x'), 0, 180,
+                                                             1, 0)
+        self.window.settings['servo.fov.y'] = SettingsSlider(self.window, 'servo.fov.y',
+                                                             trans('settings.servo.fov.y'), 0, 180,
+                                                             1, 0)
+
+        self.window.settings['servo.min.x'] = SettingsSlider(self.window, 'servo.min.x',
+                                                           trans('settings.servo.min.x'), 0, 180,
+                                                           1, 0)
+        self.window.settings['servo.max.x'] = SettingsSlider(self.window, 'servo.max.x',
+                                                             trans('settings.servo.max.x'), 0, 180,
+                                                             1, 180)
+        self.window.settings['servo.min.y'] = SettingsSlider(self.window, 'servo.min.y',
+                                                             trans('settings.servo.min.y'), 0, 180,
+                                                             1, 0)
+        self.window.settings['servo.max.y'] = SettingsSlider(self.window, 'servo.max.y',
+                                                             trans('settings.servo.max.y'), 0, 180,
+                                                             1, 180)
+
+        self.window.settings['servo.limit.min.x'] = SettingsSlider(self.window, 'servo.limit.min.x',
+                                                             trans('settings.servo.limit.min.x'), 0, 180,
+                                                             1, 0)
+        self.window.settings['servo.limit.max.x'] = SettingsSlider(self.window, 'servo.limit.max.x',
+                                                             trans('settings.servo.limit.max.x'), 0, 180,
+                                                             1, 180)
+        self.window.settings['servo.limit.min.y'] = SettingsSlider(self.window, 'servo.limit.min.y',
+                                                             trans('settings.servo.limit.min.y'), 0, 180,
+                                                             1, 0)
+        self.window.settings['servo.limit.max.y'] = SettingsSlider(self.window, 'servo.limit.max.y',
+                                                             trans('settings.servo.limit.max.y'), 0, 180,
+                                                             1, 180)
+
+        label_x = QLabel(trans('settings.servo.x.label'))
+        label_x.setAlignment(Qt.AlignCenter)
+        label_x.setStyleSheet("font-weight: bold;")
+
+        label_y = QLabel(trans('settings.servo.y.label'))
+        label_y.setAlignment(Qt.AlignCenter)
+        label_y.setStyleSheet("font-weight: bold;")
+
+        config_x = QVBoxLayout()
+        config_x.addWidget(label_x)
+        config_x.addWidget(self.window.settings['servo.fov.x'])
+        config_x.addWidget(self.window.settings['servo.min.x'])
+        config_x.addWidget(self.window.settings['servo.max.x'])
+        config_x.addWidget(self.window.settings['servo.limit.min.x'])
+        config_x.addWidget(self.window.settings['servo.limit.max.x'])
+
+        config_y = QVBoxLayout()
+        config_y.addWidget(label_y)
+        config_y.addWidget(self.window.settings['servo.fov.y'])
+        config_y.addWidget(self.window.settings['servo.min.y'])
+        config_y.addWidget(self.window.settings['servo.max.y'])
+        config_y.addWidget(self.window.settings['servo.limit.min.y'])
+        config_y.addWidget(self.window.settings['servo.limit.max.y'])
+
+        cols = QHBoxLayout()
+        cols.addLayout(config_x)
+        cols.addLayout(config_y)
+
+        pixmap = QtGui.QPixmap('./assets/servo_axes.png')
+        img = QLabel()
+        img.setPixmap(pixmap)
+
+        layout = QVBoxLayout()
+        layout.addWidget(img)
+        layout.addLayout(cols)
+        layout.addLayout(bottom_layout)
+
+        self.window.dialog['config.' + id] = ConfiguratorDialog(self.window, id)
+        self.window.dialog['config.' + id].setLayout(layout)
+        self.window.dialog['config.' + id].setWindowTitle(trans('dialog.config.servo'))
+
     def alert(self, msg):
         """
         Show alert dialog
@@ -271,23 +375,25 @@ class UIDialogs:
         self.window.alert_dialog.message.setText(msg)
         self.window.alert_dialog.show()
 
-    def open(self, id):
+    def open(self, id, width=Style.DIALOG_DEBUG_WIDTH, height=Style.DIALOG_DEBUG_HEIGHT):
         """
-        Open debug dialog
+        Open debug/config dialog
 
         :param id: debug dialog id
         """
         if id not in self.window.dialog:
             return
-        self.window.dialog[id].resize(Style.DIALOG_DEBUG_WIDTH, Style.DIALOG_DEBUG_HEIGHT)
+        self.window.dialog[id].resize(width, height)
         self.window.dialog[id].show()
+        self.window.tracker.controller.configurator.update()
 
     def close(self, id):
         """
-        Close debug dialog
+        Close debug/config dialog
 
         :param id: debug dialog id
         """
         if id not in self.window.dialog:
             return
         self.window.dialog[id].close()
+        self.window.tracker.controller.configurator.close(id)

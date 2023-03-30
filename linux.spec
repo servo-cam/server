@@ -7,7 +7,7 @@ block_cipher = None
 a = Analysis(
     ['app.py'],
     pathex=[
-        '/home/marcin/Dev/tracker2/server/'
+        '.'
     ],
     binaries=[],
     datas=[
@@ -17,8 +17,8 @@ a = Analysis(
         ('model/ssd_mobilenet_2', 'model/ssd_mobilenet_2'),
         ('assets/logo.png', 'assets'), 
         ('assets/icon.ico', 'assets'),
-        ('assets/defaults/*', 'assets/defaults'), 
-        ('mp4/*', 'mp4'),
+        ('assets/servo_axes.png', 'assets'),
+        ('assets/defaults/*', 'assets/defaults'),
         ('locale/*', 'locale'), 
         ('config.ini', '.'),
         ('hosts.txt', '.'),

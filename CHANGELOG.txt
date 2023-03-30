@@ -1,3 +1,9 @@
+0.9.3 (2023.03.30)
+
+- added "live" servo configurator
+
+----
+
 0.9.2 (2023.03.27)
 
 - fixed wrong delta to angle Y axis calculation

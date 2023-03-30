@@ -5,7 +5,7 @@
 # Created By: Marcin Szczygliński <info@servocam.org>
 # GitHub: https://github.com/servo-cam
 # License: MIT
-# Updated At: 2023.03.27 02:00
+# Updated At: 2023.03.30 17:00
 # =============================================================================
 
 import configparser
@@ -404,6 +404,8 @@ class Storage:
 
         # camera
         cfg['CONFIG']['camera.idx'] = str(self.tracker.camera.idx)
+        cfg['CONFIG']['camera.fov.x'] = str(int(self.tracker.camera.fov[0]))
+        cfg['CONFIG']['camera.fov.y'] = str(int(self.tracker.camera.fov[1]))
 
         # targeting
         cfg['CONFIG']['target.mode'] = str(self.tracker.target_mode)
@@ -492,6 +494,15 @@ class Storage:
         cfg['CONFIG']['servo.enabled.y'] = str(int(self.tracker.servo.y))
         cfg['CONFIG']['servo.local'] = str(self.tracker.servo.local)
         cfg['CONFIG']['servo.remote'] = str(self.tracker.servo.remote)
+
+        cfg['CONFIG']['servo.angle.min.x'] = str(self.tracker.servo.ANGLE_MIN_X)
+        cfg['CONFIG']['servo.angle.min.y'] = str(self.tracker.servo.ANGLE_MIN_Y)
+        cfg['CONFIG']['servo.angle.max.x'] = str(self.tracker.servo.ANGLE_MAX_X)
+        cfg['CONFIG']['servo.angle.max.y'] = str(self.tracker.servo.ANGLE_MAX_Y)
+        cfg['CONFIG']['servo.limit.min.x'] = str(self.tracker.servo.ANGLE_LIMIT_MIN_X)
+        cfg['CONFIG']['servo.limit.min.y'] = str(self.tracker.servo.ANGLE_LIMIT_MIN_Y)
+        cfg['CONFIG']['servo.limit.max.x'] = str(self.tracker.servo.ANGLE_LIMIT_MAX_X)
+        cfg['CONFIG']['servo.limit.max.y'] = str(self.tracker.servo.ANGLE_LIMIT_MAX_Y)
 
         cfg['CONFIG']['servo.angle.step.x'] = str(self.tracker.servo.ANGLE_STEP_X)
         cfg['CONFIG']['servo.angle.step.y'] = str(self.tracker.servo.ANGLE_STEP_Y)

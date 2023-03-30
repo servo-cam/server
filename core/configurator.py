@@ -5,11 +5,13 @@
 # Created By: Marcin Szczygliński <info@servocam.org>
 # GitHub: https://github.com/servo-cam
 # License: MIT
-# Updated At: 2023.03.27 02:00
+# Updated At: 2023.03.30 17:00
 # =============================================================================
 
 import configparser
 import os
+
+from core.utils import trans
 
 
 class Configurator:
@@ -22,7 +24,7 @@ class Configurator:
         self.tracker = tracker
 
         # prepare cfg ids
-        self.ids = ['config', 'hosts', 'streams']
+        self.ids = ['config', 'hosts', 'streams', 'servo']
         self.active = {}
 
         # prepare active
@@ -61,11 +63,13 @@ class Configurator:
 
         :param id: file id
         """
-        self.tracker.window.path_label[id].setText(str(self.get_path(id)))
+        if id in self.tracker.window.path_label.keys():
+            self.tracker.window.path_label[id].setText(str(self.get_path(id)))
 
     def load(self, id):
         """
         Load file
+
         :param id: file id
         """
         # update path label
@@ -81,8 +85,9 @@ class Configurator:
                     txt = f.read()
                     f.close()
                     self.tracker.window.editor['config'].setPlainText(txt)
-            except:
+            except Exception as e:
                 self.tracker.debug.log('[ERROR] Error loading file: {}'.format(path))
+                print(e)
         elif id == 'hosts':
             path = self.tracker.storage.get_user_hosts_path()
             if not os.path.exists(path):
@@ -92,8 +97,9 @@ class Configurator:
                     txt = f.read()
                     f.close()
                     self.tracker.window.editor['hosts'].setPlainText(txt)
-            except:
+            except Exception as e:
                 self.tracker.debug.log('[ERROR] Error loading file: {}'.format(path))
+                print(e)
         elif id == 'streams':
             path = self.tracker.storage.get_user_streams_path()
             if not os.path.exists(path):
@@ -103,8 +109,11 @@ class Configurator:
                     txt = f.read()
                     f.close()
                     self.tracker.window.editor['streams'].setPlainText(txt)
-            except:
+            except Exception as e:
                 self.tracker.debug.log('[ERROR] Error loading file: {}'.format(path))
+                print(e)
+        elif id == "servo":
+            print("SERVO LOAD")
 
     def load_defaults(self, id):
         """
@@ -120,8 +129,9 @@ class Configurator:
                     f.close()
                     self.tracker.window.editor['config'].setPlainText(txt)
                     self.tracker.debug.log('[OK] LOADED DEFAULT: {}'.format(path))
-            except:
+            except Exception as e:
                 self.tracker.debug.log('[ERROR] Error loading default file: {}'.format(path))
+                print(e)
         elif id == 'hosts':
             path = './assets/defaults/hosts.txt'
             try:
@@ -130,8 +140,9 @@ class Configurator:
                     f.close()
                     self.tracker.window.editor['hosts'].setPlainText(txt)
                     self.tracker.debug.log('[OK] LOADED DEFAULT: {}'.format(path))
-            except:
+            except Exception as e:
                 self.tracker.debug.log('[ERROR] Error loading default file: {}'.format(path))
+                print(e)
         elif id == 'streams':
             path = './assets/defaults/streams.txt'
             try:
@@ -140,8 +151,24 @@ class Configurator:
                     f.close()
                     self.tracker.window.editor['streams'].setPlainText(txt)
                     self.tracker.debug.log('[OK] LOADED DEFAULT: {}'.format(path))
-            except:
+            except Exception as e:
                 self.tracker.debug.log('[ERROR] Error loading default file: {}'.format(path))
+                print(e)
+
+        # servo defaults
+        elif id == "servo":
+            self.tracker.servo.ANGLE_MIN_X = 0
+            self.tracker.servo.ANGLE_MAX_X = 180
+            self.tracker.servo.ANGLE_MIN_Y = 0
+            self.tracker.servo.ANGLE_MAX_Y = 180
+            self.tracker.servo.ANGLE_LIMIT_MIN_X = 0
+            self.tracker.servo.ANGLE_LIMIT_MAX_X = 180
+            self.tracker.servo.ANGLE_LIMIT_MIN_Y = 0
+            self.tracker.servo.ANGLE_LIMIT_MAX_Y = 180
+            self.tracker.camera.fov = [54, 41]
+            self.tracker.controller.settings.init('servo')
+
+            print("SERVO: LOADED DEFAULTS")
 
         self.update_path_label(id)
 
@@ -159,8 +186,10 @@ class Configurator:
                     f.write(data)
                     f.close()
                     self.tracker.debug.log('[OK] SAVED: {}'.format(path))
-            except:
+            except Exception as e:
                 self.tracker.debug.log('[ERROR] Error saving file: {}'.format(path))
+                self.tracker.window.ui.dialogs.alert(trans('dialog.info.save_config'))
+                print(e)
         elif id == 'hosts':
             data = self.tracker.window.editor['hosts'].toPlainText()
             path = self.tracker.storage.get_user_hosts_path()
@@ -169,8 +198,10 @@ class Configurator:
                     f.write(data)
                     f.close()
                     self.tracker.debug.log('[OK] SAVED: {}'.format(path))
-            except:
+                    self.tracker.window.ui.dialogs.alert(trans('dialog.info.save_config'))
+            except Exception as e:
                 self.tracker.debug.log('[ERROR] Error saving file: {}'.format(path))
+                print(e)
         elif id == 'streams':
             data = self.tracker.window.editor['streams'].toPlainText()
             path = self.tracker.storage.get_user_streams_path()
@@ -179,8 +210,19 @@ class Configurator:
                     f.write(data)
                     f.close()
                     self.tracker.debug.log('[OK] SAVED: {}'.format(path))
-            except:
+                    self.tracker.window.ui.dialogs.alert(trans('dialog.info.save_config'))
+            except Exception as e:
                 self.tracker.debug.log('[ERROR] Error saving file: {}'.format(path))
+                print(e)
+
+        # save servo config
+        elif id == "servo":
+            try:
+                self.tracker.configurator.dump_config()
+                self.tracker.window.ui.dialogs.alert(trans('dialog.info.save_config'))
+                self.tracker.debug.log("[CONFIG] SAVED")
+            except Exception as e:
+                self.tracker.debug.log("[ERROR] Error saving config: {}".format(e))
 
         self.update_path_label(id)
 

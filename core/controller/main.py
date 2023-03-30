@@ -5,7 +5,7 @@
 # Created By: Marcin Szczygliński <info@servocam.org>
 # GitHub: https://github.com/servo-cam
 # License: MIT
-# Updated At: 2023.03.27 02:00
+# Updated At: 2023.03.30 17:00
 # =============================================================================
 
 from core.controller.control_manual import ControlManual
@@ -24,6 +24,7 @@ from core.controller.internals import Internals
 from core.controller.video_filter import VideoFilter
 from core.controller.configurator import Configurator
 from core.controller.options import Options
+from core.controller.settings import Settings
 
 
 class Controller:
@@ -50,6 +51,7 @@ class Controller:
         self.video_filter = VideoFilter(tracker)
         self.configurator = Configurator(tracker)
         self.options = Options(tracker)
+        self.settings = Settings(tracker)
 
     def init(self, source):
         """

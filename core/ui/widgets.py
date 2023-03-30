@@ -5,7 +5,7 @@
 # Created By: Marcin Szczygliński <info@servocam.org>
 # GitHub: https://github.com/servo-cam
 # License: MIT
-# Updated At: 2023.03.27 02:00
+# Updated At: 2023.03.30 17:00
 # =============================================================================
 
 from PySide6 import QtCore
@@ -383,7 +383,8 @@ class ConfiguratorDialog(QDialog):
         :param event: close event
         """
         self.window.tracker.configurator.active[self.id] = False
-        self.window.tracker.controller.configurator.update_menu()
+        self.window.tracker.controller.configurator.close(self.id)
+        self.window.tracker.controller.configurator.update()
 
 
 class AlertDialog(QDialog):
@@ -546,6 +547,123 @@ class OptionInput(QLineEdit):
         """
         super(OptionInput, self).keyPressEvent(event)
         self.window.tracker.controller.options.change(self.id, self.text())
+
+
+class SettingsSlider(QWidget):
+    def __init__(self, window=None, id=None, title=None, min=None, max=None, step=None, value=None):
+        """
+        Settings slider
+
+        :param window: main window
+        :param id: option id
+        :param title: option title
+        :param min: min value
+        :param max: max value
+        :param step: value step
+        :param value: current value
+        """
+        super(SettingsSlider, self).__init__(window)
+        self.window = window
+        self.id = id
+        self.title = title
+        self.min = min
+        self.max = max
+        self.step = step
+        self.value = value
+
+        self.label = QLabel(title)
+        self.slider = QSlider(Qt.Horizontal)
+        self.slider.setMinimum(min)
+        self.slider.setMaximum(max)
+        self.slider.setSingleStep(step)
+        self.slider.setValue(value)
+        self.slider.valueChanged.connect(
+            lambda: self.window.tracker.controller.settings.apply(self.id, self.slider.value(), 'slider'))
+
+        self.input = SettingsInputInline(self.window, self.id)
+        self.input.setText(str(value))
+
+        self.layout = QHBoxLayout()
+        self.layout.addWidget(self.label)
+        self.layout.addWidget(self.slider)
+        self.layout.addWidget(self.input)
+
+        self.setLayout(self.layout)
+
+
+class SettingsCheckbox(QWidget):
+    def __init__(self, window=None, id=None, title=None, value=False):
+        """
+        Settings checkbox
+
+        :param window: main window
+        :param id: option id
+        :param title: option title
+        :param value: current value
+        """
+        super(SettingsCheckbox, self).__init__(window)
+        self.window = window
+        self.id = id
+        self.title = title
+        self.value = value
+
+        self.label = QLabel(title)
+        self.box = QCheckBox()
+        self.box.setChecked(value)
+        self.box.stateChanged.connect(
+            lambda: self.window.tracker.controller.settings.toggle(self.id, self.box.isChecked()))
+
+        self.layout = QHBoxLayout()
+        self.layout.addWidget(self.box)
+        self.layout.addWidget(self.label)
+
+        self.setLayout(self.layout)
+
+
+class SettingsInputInline(QLineEdit):
+    def __init__(self, window=None, id=None):
+        """
+        Settings input inline
+
+        :param window: main window
+        :param id: option id
+        """
+        super(SettingsInputInline, self).__init__(window)
+        self.window = window
+        self.id = id
+        self.setMaximumWidth(60)
+
+    def keyPressEvent(self, event):
+        """
+        Key press event
+
+        :param event: key event
+        """
+        super(SettingsInputInline, self).keyPressEvent(event)
+        self.window.tracker.controller.settings.apply(self.id, self.text(), 'input')
+
+
+class SettingsInput(QLineEdit):
+    def __init__(self, window=None, id=None):
+        """
+        Settings input
+
+        :param window: main window
+        :param id: option id
+        """
+        super(SettingsInput, self).__init__(window)
+        self.window = window
+        self.id = id
+        self.setMaximumWidth(60)
+
+    def keyPressEvent(self, event):
+        """
+        Key press event
+
+        :param event: key event
+        """
+        super(SettingsInput, self).keyPressEvent(event)
+        self.window.tracker.controller.settings.change(self.id, self.text())
 
 
 class ClientsMenu(QTreeView):

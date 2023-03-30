@@ -5,7 +5,7 @@
 # Created By: Marcin Szczygliński <info@servocam.org>
 # GitHub: https://github.com/servo-cam
 # License: MIT
-# Updated At: 2023.03.27 02:00
+# Updated At: 2023.03.30 17:00
 # =============================================================================
 
 from PySide6.QtGui import QAction, QIcon
@@ -164,6 +164,10 @@ class UIMenu:
         self.window.menu['servo.axis_x'] = QAction(trans("menu.servo.enable.x"), self.window, checkable=True)
         self.window.menu['servo.axis_y'] = QAction(trans("menu.servo.enable.y"), self.window, checkable=True)
 
+        self.window.menu['servo.config'] = QAction(trans("menu.servo.config"), self.window, checkable=True)
+        self.window.menu['servo.config'].triggered.connect(
+            lambda: self.window.tracker.controller.configurator.toggle_settings('servo'))
+
         self.window.menu['servo.axis_x'].triggered.connect(
             lambda: self.window.tracker.controller.servo.toggle('x'))
         self.window.menu['servo.axis_y'].triggered.connect(
@@ -171,6 +175,7 @@ class UIMenu:
 
         servo_menu.addAction(self.window.menu['servo.axis_x'])
         servo_menu.addAction(self.window.menu['servo.axis_y'])
+        servo_menu.addAction(self.window.menu['servo.config'])
 
     def setup_render(self):
         """Setup render menu"""
@@ -327,15 +332,19 @@ class UIMenu:
         """Setup the config menu."""
         self.window.menu['config.config'] = QAction(trans("menu.config.config"), self.window, checkable=True)
         self.window.menu['config.config'].triggered.connect(
-            lambda: self.window.tracker.controller.configurator.toggle('config'))
+            lambda: self.window.tracker.controller.configurator.toggle_editor('config'))
 
         self.window.menu['config.hosts'] = QAction(trans("menu.config.hosts"), self.window, checkable=True)
         self.window.menu['config.hosts'].triggered.connect(
-            lambda: self.window.tracker.controller.configurator.toggle('hosts'))
+            lambda: self.window.tracker.controller.configurator.toggle_editor('hosts'))
 
         self.window.menu['config.streams'] = QAction(trans("menu.config.streams"), self.window, checkable=True)
         self.window.menu['config.streams'].triggered.connect(
-            lambda: self.window.tracker.controller.configurator.toggle('streams'))
+            lambda: self.window.tracker.controller.configurator.toggle_editor('streams'))
+
+        self.window.menu['config.servo'] = QAction(trans("menu.config.servo"), self.window, checkable=True)
+        self.window.menu['config.servo'].triggered.connect(
+            lambda: self.window.tracker.controller.configurator.toggle_settings('servo'))
 
         self.window.menu['config.save'] = QAction(trans("menu.config.save"), self.window, checkable=False)
         self.window.menu['config.save'].triggered.connect(
@@ -345,6 +354,7 @@ class UIMenu:
         config_menu.addAction(self.window.menu['config.config'])
         config_menu.addAction(self.window.menu['config.hosts'])
         config_menu.addAction(self.window.menu['config.streams'])
+        config_menu.addAction(self.window.menu['config.servo'])
         config_menu.addAction(self.window.menu['config.save'])
 
     def setup_info(self):
