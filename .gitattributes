@@ -1,2 +1,2 @@
-model/* linguist-vendored
-lib/* linguist-vendored
+model/** linguist-vendored
+lib/** linguist-vendored
