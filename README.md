@@ -12,7 +12,7 @@ GitHub: https://github.com/servo-cam
 
 Release: **0.9.3** | 2023.03.30
 
-Requires client app: **>= v0.9.2**
+Requires client app: **>= 0.9.2**
 
 
 ## CHANGELOG
