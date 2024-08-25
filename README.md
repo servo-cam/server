@@ -14,6 +14,25 @@ Release: **0.9.3** | 2023.03.30
 
 Requires client app: **>= 0.9.2**
 
+------
+
+**Usage:**
+
+
+1) Create a virtual environment and install dependencies:
+
+```
+python3 -m venv ./venv
+source ./venv/bin/activate
+pip install -r requirements.txt
+```
+
+2) Start the app:
+
+```python3 app.py```
+
+------
+
 
 ## CHANGELOG
 
